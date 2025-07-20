@@ -107,7 +107,8 @@ else
     # Check for uncommitted changes in interactive mode
     if [ -n "$(git status --porcelain)" ]; then
         print_warning "You have uncommitted changes"
-        read -p "$(echo -e ${YELLOW}Continue anyway? (y/N)${NC}) " -n 1 -r
+        echo -e "${YELLOW}Continue anyway? (y/N)${NC}"
+        read -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             print_error "Aborting due to uncommitted changes"
@@ -116,7 +117,8 @@ else
     fi
     
     # Ask if user wants to update version in interactive mode
-    read -p "$(echo -e ${YELLOW}Update version? (y/N)${NC}) " -n 1 -r
+    echo -e "${YELLOW}Update version? (y/N)${NC}"
+    read -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "${YELLOW}Enter new version (current: $current_version): ${NC}"
@@ -222,7 +224,8 @@ else
             ;;
         2)
             print_warning "This will upload to PRODUCTION PyPI and cannot be undone!"
-            read -p "$(echo -e ${YELLOW}Are you absolutely sure? (y/N)${NC}) " -n 1 -r
+            echo -e "${YELLOW}Are you absolutely sure? (y/N)${NC}"
+            read -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 print_step "Uploading to Production PyPI..."
@@ -274,7 +277,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         print_success "Changes pushed to remote repository"
     else
         # Interactive mode: ask for confirmation
-        read -p "$(echo -e ${YELLOW}Commit version update? (y/N)${NC}) " -n 1 -r
+        echo -e "${YELLOW}Commit version update? (y/N)${NC}"
+        read -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             print_step "Committing version update..."
@@ -288,13 +292,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
             print_success "Version update committed"
             
             # Create git tag
-            read -p "$(echo -e ${YELLOW}Create git tag v$current_version? (y/N)${NC}) " -n 1 -r
+            echo -e "${YELLOW}Create git tag v$current_version? (y/N)${NC}"
+            read -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 git tag -a "v$current_version" -m "Release version $current_version"
                 print_success "Git tag v$current_version created"
                 
-                read -p "$(echo -e ${YELLOW}Push to remote repository? (y/N)${NC}) " -n 1 -r
+                echo -e "${YELLOW}Push to remote repository? (y/N)${NC}"
+                read -n 1 -r
                 echo
                 if [[ $REPLY =~ ^[Yy]$ ]]; then
                     git push origin main
