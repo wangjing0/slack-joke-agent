@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "slack-joke-agent"
-version = "1.0.7"
+version = "1.0.8"
 description = "Daily Slack agent that sends jokes and trivia with MCP"
 readme = "README.md"
 license-files = ["LICENSE"]
