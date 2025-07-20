@@ -7,7 +7,7 @@ name = "slack-joke-agent"
 version = "1.0.1"
 description = "Daily Slack agent that sends jokes and trivia with MCP"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Jing Wang", email = "jingwang.physics@gmail.com"}
 ]
@@ -18,7 +18,6 @@ keywords = ["slack", "mcp", "automation", "jokes"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",

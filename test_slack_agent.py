@@ -57,15 +57,21 @@ DEFAULT_CHANNEL_ID=test_channel
         self.assertEqual(agent.slack_config['SLACK_BOT_TOKEN'], 'test_token')
         self.assertEqual(agent.slack_config['SLACK_TEAM_ID'], 'test_team')
 
-    @patch.dict(os.environ, {
-        'SLACK_BOT_TOKEN': 'test_token',
-        'SLACK_TEAM_ID': 'test_team'
-    }, clear=True)
     @patch('anthropic.Anthropic')
-    def test_slack_agent_no_anthropic_key(self, mock_anthropic):
+    @patch('os.getenv')
+    def test_slack_agent_no_anthropic_key(self, mock_getenv, mock_anthropic):
         """Test SlackAgent initialization without Anthropic API key."""
-        # Remove any existing ANTHROPIC_API_KEY
-        os.environ.pop('ANTHROPIC_API_KEY', None)
+        # Mock os.getenv to return test values but no ANTHROPIC_API_KEY
+        def mock_getenv_side_effect(key, default=None):
+            env_map = {
+                'SLACK_BOT_TOKEN': 'test_token',
+                'SLACK_TEAM_ID': 'test_team',
+                'ANTHROPIC_API_KEY': None,  # No API key
+                'DEFAULT_CHANNEL_ID': 'test_channel'
+            }
+            return env_map.get(key, default)
+        
+        mock_getenv.side_effect = mock_getenv_side_effect
         
         agent = slack_agent.SlackAgent()
         
@@ -73,13 +79,12 @@ DEFAULT_CHANNEL_ID=test_channel
         self.assertFalse(agent.use_ai_generation)
         self.assertEqual(agent.slack_config['SLACK_BOT_TOKEN'], 'test_token')
 
-    @patch.dict(os.environ, {}, clear=True)
     @patch('anthropic.Anthropic')
-    def test_slack_agent_missing_required_env(self, mock_anthropic):
+    @patch('os.getenv')
+    def test_slack_agent_missing_required_env(self, mock_getenv, mock_anthropic):
         """Test SlackAgent initialization with missing required environment variables."""
-        # Clear all environment variables to trigger validation error
-        for key in ['SLACK_BOT_TOKEN', 'SLACK_TEAM_ID', 'ANTHROPIC_API_KEY']:
-            os.environ.pop(key, None)
+        # Mock os.getenv to return None for all keys (missing environment variables)
+        mock_getenv.return_value = None
             
         with self.assertRaises(ValueError) as context:
             slack_agent.SlackAgent()
