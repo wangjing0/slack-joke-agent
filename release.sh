@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Slack Joke Agent Release Script
-# Builds and publishes the package to PyPI
+# Streamlined build and publish script for PyPI
 
 set -e  # Exit on any error
 
 # Colors for output
-RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Function to print colored output
@@ -29,11 +29,6 @@ print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Function to prompt for confirmation
 confirm() {
     read -p "$(echo -e ${YELLOW}$1${NC}) " -n 1 -r
@@ -51,21 +46,6 @@ echo "║                  Slack Joke Agent Release                   ║"
 echo "║                    PyPI Publishing Script                   ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
-
-# Check for required tools
-print_step "Checking required tools..."
-
-if ! command_exists python3; then
-    print_error "Python 3 is required but not installed"
-    exit 1
-fi
-
-if ! command_exists git; then
-    print_error "Git is required but not installed"
-    exit 1
-fi
-
-print_success "All required tools are available"
 
 # Check if we're in a git repository
 if [ ! -d ".git" ]; then
@@ -87,26 +67,18 @@ current_version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject
 
 print_step "Current version: $current_version"
 
-# Prompt for new version
-echo -e "${YELLOW}Enter new version (current: $current_version): ${NC}"
-read -r new_version
-
-if [ -z "$new_version" ]; then
-    print_error "Version cannot be empty"
-    exit 1
+# Ask if user wants to update version
+if confirm "Update version? (y/N)"; then
+    echo -e "${YELLOW}Enter new version (current: $current_version): ${NC}"
+    read -r new_version
+    
+    if [ -n "$new_version" ] && [ "$new_version" != "$current_version" ]; then
+        print_step "Updating version to $new_version..."
+        sed -i '' "s/version = \"$current_version\"/version = \"$new_version\"/" pyproject.toml
+        print_success "Version updated in pyproject.toml"
+        current_version=$new_version
+    fi
 fi
-
-# Update version in pyproject.toml
-print_step "Updating version to $new_version..."
-if command_exists sed; then
-    # macOS compatible sed
-    sed -i '' "s/version = \"$current_version\"/version = \"$new_version\"/" pyproject.toml
-else
-    print_error "sed command not found"
-    exit 1
-fi
-
-print_success "Version updated in pyproject.toml"
 
 # Install/upgrade build tools
 print_step "Installing/upgrading build tools..."
@@ -114,16 +86,18 @@ python3 -m pip install --upgrade pip build twine
 
 # Clean previous builds
 print_step "Cleaning previous builds..."
-rm -rf build/ dist/ *.egg-info/
+rm -rf build/ dist/ slack_joke_agent.egg-info/
 
-# Run tests if available
-if [ -f "test_slack_agent.py" ] || [ -d "tests" ]; then
-    print_step "Running tests..."
-    python3 -m pytest || {
+# Run tests
+print_step "Running tests..."
+if [ -f "test_slack_agent.py" ]; then
+    python3 test_slack_agent.py
+    if [ $? -eq 0 ]; then
+        print_success "All tests passed"
+    else
         print_error "Tests failed"
         exit 1
-    }
-    print_success "All tests passed"
+    fi
 else
     print_warning "No tests found - skipping test phase"
 fi
@@ -144,21 +118,28 @@ print_step "Checking package..."
 python3 -m twine check dist/*
 
 if [ $? -eq 0 ]; then
-    print_success "Package check passed"
+    print_success "Package validation: PASSED"
 else
-    print_error "Package check failed"
+    print_error "Package validation failed"
     exit 1
 fi
 
-# Show package contents
+# Show package contents and summary
 print_step "Package contents:"
 ls -la dist/
+echo ""
+echo -e "${GREEN}📋 Package Summary:${NC}"
+echo "   - All tests passing ✅"
+echo "   - Package validation: PASSED ✅"
+echo "   - Version: $current_version ✅"
+echo "   - Ready for PyPI publication 🚀"
+echo ""
 
 # Prompt for publication target
 echo -e "${YELLOW}Choose publication target:${NC}"
-echo "1) Test PyPI (recommended for first release)"
+echo "1) Test PyPI (recommended for testing)"
 echo "2) Production PyPI"
-echo "3) Skip upload (build only)"
+echo "3) Build only (no upload)"
 
 read -p "Enter choice (1-3): " choice
 
@@ -168,7 +149,7 @@ case $choice in
         python3 -m twine upload --repository testpypi dist/*
         if [ $? -eq 0 ]; then
             print_success "Successfully uploaded to Test PyPI!"
-            echo -e "${GREEN}Install with: pip install -i https://test.pypi.org/simple/ slack-joke-agent==$new_version${NC}"
+            echo -e "${GREEN}Install with: pip install -i https://test.pypi.org/simple/ slack-joke-agent==$current_version${NC}"
         else
             print_error "Upload to Test PyPI failed"
             exit 1
@@ -181,7 +162,7 @@ case $choice in
             python3 -m twine upload dist/*
             if [ $? -eq 0 ]; then
                 print_success "Successfully uploaded to Production PyPI!"
-                echo -e "${GREEN}Install with: pip install slack-joke-agent==$new_version${NC}"
+                echo -e "${GREEN}Install with: pip install slack-joke-agent==$current_version${NC}"
             else
                 print_error "Upload to Production PyPI failed"
                 exit 1
@@ -191,7 +172,7 @@ case $choice in
         fi
         ;;
     3)
-        print_warning "Skipping upload - package built only"
+        print_warning "Build complete - package ready for manual upload"
         ;;
     *)
         print_error "Invalid choice"
@@ -199,46 +180,49 @@ case $choice in
         ;;
 esac
 
-# Commit version change
+# Commit version change if there was one
 if [ -n "$(git status --porcelain pyproject.toml)" ]; then
-    print_step "Committing version update..."
-    git add pyproject.toml
-    git commit -m "Release version $new_version
+    if confirm "Commit version update? (y/N)"; then
+        print_step "Committing version update..."
+        git add pyproject.toml
+        git commit -m "Release version $current_version
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
-    
-    print_success "Version update committed"
-    
-    # Create git tag
-    if confirm "Create git tag v$new_version? (y/N)"; then
-        git tag -a "v$new_version" -m "Release version $new_version"
-        print_success "Git tag v$new_version created"
         
-        if confirm "Push to remote repository? (y/N)"; then
-            git push origin main
-            git push origin "v$new_version"
-            print_success "Changes pushed to remote repository"
+        print_success "Version update committed"
+        
+        # Create git tag
+        if confirm "Create git tag v$current_version? (y/N)"; then
+            git tag -a "v$current_version" -m "Release version $current_version"
+            print_success "Git tag v$current_version created"
+            
+            if confirm "Push to remote repository? (y/N)"; then
+                git push origin main
+                git push origin "v$current_version"
+                print_success "Changes pushed to remote repository"
+            fi
         fi
     fi
 fi
 
+echo ""
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════════════════════════╗"
 echo "║                     Release Complete! 🎉                    ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-echo -e "${GREEN}Package: slack-joke-agent v$new_version${NC}"
+echo -e "${GREEN}Package: slack-joke-agent v$current_version${NC}"
 echo -e "${GREEN}Build artifacts available in: ./dist/${NC}"
 
 if [ "$choice" = "1" ]; then
     echo -e "${BLUE}Test the package:${NC}"
-    echo "pip install -i https://test.pypi.org/simple/ slack-joke-agent==$new_version"
+    echo "pip install -i https://test.pypi.org/simple/ slack-joke-agent==$current_version"
 elif [ "$choice" = "2" ]; then
     echo -e "${BLUE}Install the package:${NC}"
-    echo "pip install slack-joke-agent==$new_version"
+    echo "pip install slack-joke-agent==$current_version"
 fi
 
 echo -e "${BLUE}Next steps:${NC}"

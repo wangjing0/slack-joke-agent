@@ -187,10 +187,9 @@ The agent includes robust error handling:
 
 ## Development
 
-### Building the Package:
+### Building and Publishing:
 ```bash
-./build.sh  # Simple build
-./release.sh  # Interactive release with PyPI upload
+./release.sh  # Complete build, test, and publish workflow
 ```
 
 ### Running Tests:
