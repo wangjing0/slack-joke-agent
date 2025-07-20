@@ -7,7 +7,7 @@ name = "slack-joke-agent"
 version = "1.0.1"
 description = "Daily Slack agent that sends jokes and trivia with MCP"
 readme = "README.md"
-license = "MIT"
+license = {file = "LICENSE"}
 authors = [
     {name = "Jing Wang", email = "jingwang.physics@gmail.com"}
 ]
