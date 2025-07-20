@@ -45,6 +45,7 @@ python slack_agent.py --time 12:00  # Daily at noon
 ### Test with immediate message:
 ```bash
 python slack_agent.py --test
+python slack_agent.py --test-ai
 ```
 
 ### Use custom channel:
