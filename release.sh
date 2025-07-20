@@ -56,8 +56,8 @@ fi
 
 echo -e "${BLUE}"
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                  Slack Joke Agent Release                   ║"
-echo "║                    PyPI Publishing Script                   ║"
+echo "║                  Slack Joke Agent Release                    ║"
+echo "║                    PyPI Publishing Script                    ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -315,7 +315,7 @@ fi
 echo ""
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                     Release Complete! 🎉                    ║"
+echo "║                     Release Complete! 🎉                     ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
