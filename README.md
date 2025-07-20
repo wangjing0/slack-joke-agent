@@ -1,7 +1,7 @@
 # Slack Joke Agent
 
 An agent that sends jokes and trivia to your Slack channel daily.
-![alt text](https://github.com/wangjing0/slack-joke-agent/blob/main/jokes.png)
+![jokes](https://github.com/wangjing0/slack-joke-agent/raw/main/jokes.png)
 
 ## Features
 
