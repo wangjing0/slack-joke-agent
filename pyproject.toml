@@ -4,16 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "slack-joke-agent"
-version = "1.0.2"
+version = "1.0.3"
 description = "Daily Slack agent that sends jokes and trivia with MCP"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 authors = [
     {name = "Jing Wang", email = "jingwang.physics@gmail.com"}
 ]
-maintainers = [
-    {name = "Jing Wang", email = "jingwang.physics@gmail.com"}
-]
+
 keywords = ["slack", "mcp", "automation", "jokes"]
 classifiers = [
     "Development Status :: 4 - Beta",
