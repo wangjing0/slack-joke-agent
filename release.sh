@@ -248,9 +248,10 @@ else
     esac
 fi
 
-# Commit version change if there was one
+# Git operations
 if [ -n "$(git status --porcelain pyproject.toml)" ]; then
-    if confirm "Commit version update? (y/N)"; then
+    if [ "$AUTO_MODE" = true ]; then
+        # Auto mode: commit, tag, and push automatically
         print_step "Committing version update..."
         git add pyproject.toml
         git commit -m "Release version $current_version
@@ -262,14 +263,44 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         print_success "Version update committed"
         
         # Create git tag
-        if confirm "Create git tag v$current_version? (y/N)"; then
-            git tag -a "v$current_version" -m "Release version $current_version"
-            print_success "Git tag v$current_version created"
+        print_step "Creating git tag v$current_version..."
+        git tag -a "v$current_version" -m "Release version $current_version"
+        print_success "Git tag v$current_version created"
+        
+        # Push to remote repository
+        print_step "Pushing to remote repository..."
+        git push origin main
+        git push origin "v$current_version"
+        print_success "Changes pushed to remote repository"
+    else
+        # Interactive mode: ask for confirmation
+        read -p "$(echo -e ${YELLOW}Commit version update? (y/N)${NC}) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            print_step "Committing version update..."
+            git add pyproject.toml
+            git commit -m "Release version $current_version
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
             
-            if confirm "Push to remote repository? (y/N)"; then
-                git push origin main
-                git push origin "v$current_version"
-                print_success "Changes pushed to remote repository"
+            print_success "Version update committed"
+            
+            # Create git tag
+            read -p "$(echo -e ${YELLOW}Create git tag v$current_version? (y/N)${NC}) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                git tag -a "v$current_version" -m "Release version $current_version"
+                print_success "Git tag v$current_version created"
+                
+                read -p "$(echo -e ${YELLOW}Push to remote repository? (y/N)${NC}) " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    git push origin main
+                    git push origin "v$current_version"
+                    print_success "Changes pushed to remote repository"
+                fi
             fi
         fi
     fi
