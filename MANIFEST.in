@@ -1,0 +1,26 @@
+# Include package files
+include README.md
+include LICENSE
+include pyproject.toml
+include MANIFEST.in
+
+# Include environment template
+include .env.example
+
+# Include scripts
+include start-agent.sh
+include release.sh
+
+# Exclude sensitive files
+exclude .env
+exclude slack_agent.log
+exclude *.log
+
+# Exclude development files
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
+recursive-exclude * .git*
+
+# Include only the main module
+include slack_agent.py
