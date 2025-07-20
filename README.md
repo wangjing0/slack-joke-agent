@@ -6,14 +6,10 @@ An agent that sends jokes and trivia to your Slack channel daily.
 ## Features
 
 - AI-Generated Content - Fresh jokes and trivia powered by Claude AI
-- Science/tech jokes (60% of messages) 
-- Science/tech history trivia facts (40% of messages)
+- Science/tech jokes (60% of messages) and history trivia facts (40% of messages)
 - Automated posting at 9:00 AM daily (configurable)
 - Uses MCP Slack server integration
-- Targets #random channel by default
-- Written in Python with robust error handling
-- Comprehensive logging to file and console
-- Graceful Fallback - Uses predefined content if AI generation fails
+- Target channel configurable
 
 ## Setup
 
@@ -34,33 +30,31 @@ An agent that sends jokes and trivia to your Slack channel daily.
    ./start-agent.sh
    ```
 
-4. Ensure MCP Slack server is configured
-
 ## Usage
 
 ### Start the daily agent:
 ```bash
-python3 slack_agent.py
+python slack_agent.py
 ```
 
 ### Start with custom time:
 ```bash
-python3 slack_agent.py --time 12:00  # Daily at noon
+python slack_agent.py --time 12:00  # Daily at noon
 ```
 
 ### Test with immediate message:
 ```bash
-python3 slack_agent.py --test
+python slack_agent.py --test
 ```
 
 ### Use custom channel:
 ```bash
-python3 slack_agent.py --channel C1234567890
+python slack_agent.py --channel C1234567890
 ```
 
 ### Enable verbose logging:
 ```bash
-python3 slack_agent.py --verbose
+python slack_agent.py --verbose
 ```
 
 
@@ -81,11 +75,11 @@ Environment variables in `.env` file:
 **Required:**
 - `SLACK_BOT_TOKEN` - Your Slack bot token (xoxb-...)
 - `SLACK_TEAM_ID` - Your Slack team/workspace ID
+- `DEFAULT_CHANNEL_ID` - Default channel to post
 - `ANTHROPIC_API_KEY` - Your Anthropic API key for Claude AI (sk-ant-...)
 
 **Optional:**
 - `SLACK_CHANNEL_IDS` - Comma-separated list of allowed channels
-- `DEFAULT_CHANNEL_ID` - Default channel to post
 
 **Security:**
 - All secrets loaded from `.env` file (excluded from git)
@@ -152,63 +146,20 @@ pip install -e .
 
 ### Quick Development Setup:
 ```bash
-git clone <repository>
+git clone https://github.com/wangjing0/slack-joke-agent.git
 cd slack-joke-agent
 ./start-agent.sh
 ```
-
-## Dependencies
-
-Runtime Dependencies:
-- Python 3.8+
-- `schedule>=1.2.0` - Task scheduling
-- `python-dotenv>=1.0.0` - Environment variable loading
-- `anthropic>=0.57.1` - Anthropic Claude AI SDK
-
-Development Dependencies:
-- `pytest>=7.0.0` - Testing framework
-- `black>=22.0.0` - Code formatter
-- `flake8>=4.0.0` - Linting
-- `mypy>=0.950` - Type checking
-
-## Error Handling
-
-The agent includes robust error handling:
-- MCP server timeouts (30-second limit)
-- Network connectivity issues
-- Invalid channel configurations
-- Graceful shutdown on Ctrl+C
-
-## Development
-
-### Building and Publishing:
-
-Automatic Release:
-```bash
-./release.sh 1.0.3  # Automated release to PyPI
-```
-
-Interactive Release:
-```bash
-./release.sh        # Interactive mode with prompts
-```
-
-Help:
-```bash
-./release.sh --help # Show usage information
-```
-
-Automatic mode will update version, run tests, build package, upload to PyPI, commit changes, create git tag, and push to repository.
 
 ### Running Tests:
 ```bash
 python test_slack_agent.py
 ```
 
-### Package Structure:
-- `slack_agent.py` - Main application
-- `pyproject.toml` - Modern Python packaging
-- `LICENSE` - MIT license
-- `MANIFEST.in` - Package file inclusion rules
-- `test_slack_agent.py` - Test suite
-- `release.sh` - Automated release script
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
