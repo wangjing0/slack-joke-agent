@@ -188,9 +188,30 @@ The agent includes robust error handling:
 ## Development
 
 ### Building and Publishing:
+
+**Automatic Release (Recommended):**
 ```bash
-./release.sh  # Complete build, test, and publish workflow
+./release.sh 1.0.3  # Automated release to PyPI with version 1.0.3
 ```
+
+**Interactive Release:**
+```bash
+./release.sh        # Interactive mode with prompts
+```
+
+**Help:**
+```bash
+./release.sh --help # Show usage information
+```
+
+The automatic mode will:
+1. Update version in pyproject.toml
+2. Run all tests
+3. Build package
+4. Validate package
+5. Upload to PyPI
+6. Commit changes and create git tag
+7. Push to remote repository
 
 ### Running Tests:
 ```bash
@@ -203,5 +224,4 @@ python test_slack_agent.py
 - `LICENSE` - MIT license
 - `MANIFEST.in` - Package file inclusion rules
 - `test_slack_agent.py` - Test suite
-- `build.sh` - Simple build script
-- `release.sh` - Full release workflow
+- `release.sh` - Automated release script
