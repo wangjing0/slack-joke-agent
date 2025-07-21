@@ -3,7 +3,7 @@
 # Slack Daily Agent Startup Script (Python Version)
 # This script starts the agent and keeps it running
 
-echo "🤖 Starting Slack Daily Agent (Python)..."
+echo "🤖 Starting Slack Joke Agent (Python)..."
 echo "📡 Agent will send jokes/trivia to #random daily at 9:00 AM"
 echo "🔧 Using MCP Slack integration"
 echo ""

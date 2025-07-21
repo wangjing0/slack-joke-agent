@@ -257,11 +257,7 @@ if [ -n "$(git status --porcelain pyproject.toml)" ]; then
         # Auto mode: commit, tag, and push automatically
         print_step "Committing version update..."
         git add pyproject.toml
-        git commit -m "Release version $current_version
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+        git commit -m "Release version $current_version"
         
         print_success "Version update committed"
         
@@ -283,11 +279,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             print_step "Committing version update..."
             git add pyproject.toml
-            git commit -m "Release version $current_version
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+            git commit -m "Release version $current_version"
             
             print_success "Version update committed"
             
